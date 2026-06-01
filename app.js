@@ -26,6 +26,7 @@ const state = {
     inventory: [],
     sales: [],
     expenses: [],
+    hiddenCustomers: [],
     cart: {
         items: [],
         laborDesc: "",
@@ -95,6 +96,18 @@ const app = {
                     if (state.activeTab === "expenses") this.renderExpenses();
                 }
             });
+
+            onSnapshot(doc(db, "shopData", "hiddenCustomers"), (docSnap) => {
+                if (docSnap.exists()) {
+                    state.hiddenCustomers = docSnap.data().items || [];
+                } else {
+                    state.hiddenCustomers = [];
+                }
+                if (this.dom) {
+                    if (state.activeTab === "customers") this.renderCustomersList();
+                    if (state.activeTab === "reminders") this.renderServiceReminders();
+                }
+            });
         } catch (e) {
             console.error("Error setting up Firebase listeners:", e);
         }
@@ -106,6 +119,7 @@ const app = {
             setDoc(doc(db, "shopData", "inventory"), { items: state.inventory });
             setDoc(doc(db, "shopData", "sales"), { items: state.sales });
             setDoc(doc(db, "shopData", "expenses"), { items: state.expenses });
+            setDoc(doc(db, "shopData", "hiddenCustomers"), { items: state.hiddenCustomers });
         } catch (e) {
             console.error("Error saving to Firebase:", e);
             alert("Warning: Error syncing to cloud! Please check your internet connection.");
@@ -1151,16 +1165,16 @@ const app = {
             time: timeStr,
             customerPhone: phone || "Walk-in Customer",
             customerName: name || "Walk-in",
-            vehicleNo,
+            vehicleNo: vehicleNo || "N/A",
             vehicleModel: vehicleModel || "General Vehicle",
-            currentMileage: mileage,
-            nextMileage,
+            currentMileage: mileage || 0,
+            nextMileage: nextMileage || null, // Fix: prevent undefined/NaN
             items: [...state.cart.items],
             laborDesc: state.cart.laborDesc || "General Workshop Tuning",
-            laborCharges: state.cart.laborCharges,
-            discount: state.cart.discount,
-            totalPayable: totalBill,
-            profit: netProfit
+            laborCharges: state.cart.laborCharges || 0,
+            discount: state.cart.discount || 0,
+            totalPayable: totalBill || 0,
+            profit: netProfit || 0
         };
 
         state.sales.push(newSale);
@@ -1424,6 +1438,9 @@ const app = {
         let html = "";
 
         const filtered = customers.filter(c => {
+            const isHidden = state.hiddenCustomers && state.hiddenCustomers.includes(c.vehicleNo);
+            if (isHidden) return false;
+            
             return c.name.toLowerCase().includes(query) || 
                    c.phone.includes(query) ||
                    c.vehicleNo.toLowerCase().includes(query) ||
@@ -1445,11 +1462,24 @@ const app = {
                         <td data-label="Last Visit Date"><span class="font-digit">${c.lastVisitDate}</span></td>
                         <td data-label="Actions" class="text-center">
                             <button class="btn btn-sm btn-secondary" onclick="app.openCustomerHistoryModal('${c.vehicleNo}')">View Log</button>
+                            <button class="btn btn-sm btn-danger" onclick="app.hideCustomer('${c.vehicleNo}', '${c.name}')">Delete</button>
                         </td>
                     </tr>`;
             });
         }
         this.dom.customersTbody.innerHTML = html;
+    },
+
+    hideCustomer: function(vehicleNo, name) {
+        if (confirm(`Are you sure you want to delete client ${name} (${vehicleNo}) from your directory? Their past sales will remain for accounting, but they will be hidden from this list.`)) {
+            if (!state.hiddenCustomers) state.hiddenCustomers = [];
+            if (!state.hiddenCustomers.includes(vehicleNo)) {
+                state.hiddenCustomers.push(vehicleNo);
+                this.saveData();
+                this.renderCustomersList();
+                this.updateGlobalBadges();
+            }
+        }
     },
 
     openCustomerHistoryModal: function(vehicleNo) {
@@ -1494,19 +1524,18 @@ const app = {
         
         const customers = this.getCustomersSummary();
         const overdue = [];
-
         const now = new Date();
 
         customers.forEach(c => {
-            // Ignore walk-in variables
-            if (c.phone === "N/A" || c.phone === "Walk-in Customer" || c.name === "Walk-in") return;
+            // Check if hidden
+            if (state.hiddenCustomers && state.hiddenCustomers.includes(c.vehicleNo)) return;
 
-            const lastServiceDate = new Date(c.lastVisitDate);
-            const timeDiff = now.getTime() - lastServiceDate.getTime();
-            const daysPassed = Math.floor(timeDiff / (1000 * 3600 * 24));
+            // Date difference calculation
+            const lastDate = new Date(c.lastVisitDate);
+            const diffTime = Math.abs(now - lastDate);
+            const daysPassed = Math.floor(diffTime / (1000 * 60 * 60 * 24));
 
             // Estimate current mileage or compare nextMileage alert
-            // Check if any invoice details explicitly had a nextMileage target
             let nextDueMileage = c.lastMileage + kmLimit;
             let explicitDue = false;
 
@@ -1517,9 +1546,7 @@ const app = {
                 }
             });
 
-            // We trigger reminder if:
-            // 1. Days passed exceeds limits (e.g. 90 days / 3 months)
-            // 2. Or current mileage is expected to exceed nextDueMileage (estimated, or user mileage target)
+            // We trigger reminder if days passed exceeds limits
             const daysOverdue = daysPassed >= daysLimit;
             
             if (daysOverdue) {
