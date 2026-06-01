@@ -1,0 +1,916 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gulf Engine Oil Center - Dashboard</title>
+    <!-- Google Fonts: Inter & Orbitron for sleek automotive/dashboard feel -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Orbitron:wght@500;700;900&display=swap" rel="stylesheet">
+    <!-- Mobile App Meta Tags -->
+    <meta name="theme-color" content="#0b0d10">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="mobile-web-app-capable" content="yes">
+    <link rel="manifest" href="manifest.json">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Sidebar Navigation -->
+        <aside class="sidebar" id="sidebar">
+            <div class="sidebar-brand">
+                <div class="brand-logo">
+                    <svg viewBox="0 0 24 24" width="28" height="28" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                </div>
+                <div class="brand-name">
+                    <h1>GULF</h1>
+                    <span>Engine Oil Center</span>
+                </div>
+            </div>
+            
+            <nav class="sidebar-menu">
+                <a href="#" class="menu-item active" data-tab="dashboard">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+                    <span>Dashboard</span>
+                </a>
+                <a href="#" class="menu-item" data-tab="billing">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M10 4v16M2 10h20M6 4v6M14 4v6"/></svg>
+                    <span>Sales & Billing</span>
+                </a>
+                <a href="#" class="menu-item" data-tab="inventory">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                    <span>Inventory (Stock)</span>
+                </a>
+                <a href="#" class="menu-item" data-tab="expenses">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                    <span>Expenses Register</span>
+                </a>
+                <a href="#" class="menu-item" data-tab="customers">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                    <span>Customers & Cars</span>
+                </a>
+                <a href="#" class="menu-item" data-tab="reminders">
+                    <div class="menu-badge-container">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"/><path d="M13.73 21a2 2 0 0 1-3.46 0"/></svg>
+                        <span class="badge badge-alert" id="reminders-count-badge" style="display:none;">0</span>
+                    </div>
+                    <span>Service Reminders</span>
+                </a>
+                <a href="#" class="menu-item" data-tab="settings">
+                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+                    <span>Backup & Settings</span>
+                </a>
+            </nav>
+
+            <div class="sidebar-footer">
+                <div class="user-status">
+                    <div class="status-indicator online"></div>
+                    <span class="user-role">Gulf Oil Admin</span>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Header -->
+            <header class="app-header">
+                <div class="header-left">
+                    <button class="mobile-menu-btn" id="mobile-menu-btn">
+                        <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2"><line x1="3" y1="12" x2="21" y2="12"/><line x1="3" y1="6" x2="21" y2="6"/><line x1="3" y1="18" x2="21" y2="18"/></svg>
+                    </button>
+                    <h2 class="page-title" id="page-title">Dashboard Overview</h2>
+                </div>
+                
+                <div class="header-right">
+                    <div class="time-widget">
+                        <div class="current-date" id="header-date">Friday, May 22, 2026</div>
+                        <div class="current-time" id="header-time">06:24 AM</div>
+                    </div>
+                    <div class="quick-actions">
+                        <button class="btn btn-primary" id="quick-sale-btn">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                            <span>New Service/Sale</span>
+                        </button>
+                    </div>
+                </div>
+            </header>
+
+            <!-- Scrollable Page Wrapper -->
+            <div class="page-wrapper">
+                
+                <!-- TAB: DASHBOARD -->
+                <section class="tab-panel active" id="tab-dashboard">
+                    <!-- Stat Cards Grid -->
+                    <div class="stats-grid">
+                        <div class="stat-card revenue">
+                            <div class="stat-icon">
+                                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="4" width="20" height="16" rx="2"/><line x1="12" y1="4" x2="12" y2="20"/><line x1="2" y1="12" x2="22" y2="12"/></svg>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-label">Today's Sales</span>
+                                <div class="stat-val font-digit" id="stat-sales">Rs. 0</div>
+                                <span class="stat-sub" id="stat-sales-qty">0 Services / Sales</span>
+                            </div>
+                        </div>
+
+                        <div class="stat-card labor">
+                            <div class="stat-icon">
+                                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z"/></svg>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-label">Tuning/Labor Earnings</span>
+                                <div class="stat-val font-digit text-cyan" id="stat-labor">Rs. 0</div>
+                                <span class="stat-sub">From car tunings today</span>
+                            </div>
+                        </div>
+
+                        <div class="stat-card expenses">
+                            <div class="stat-icon">
+                                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-label">Today's Expenses</span>
+                                <div class="stat-val font-digit text-red" id="stat-expenses">Rs. 0</div>
+                                <span class="stat-sub" id="stat-expenses-count">0 Expense entries</span>
+                            </div>
+                        </div>
+
+                        <div class="stat-card profit">
+                            <div class="stat-icon">
+                                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                            </div>
+                            <div class="stat-info">
+                                <span class="stat-label">Today's Net Profit</span>
+                                <div class="stat-val font-digit text-green" id="stat-profit">Rs. 0</div>
+                                <span class="stat-sub">Product margin + Labor - Expenses</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Inventory Overview Stats Row -->
+                    <div class="inventory-stats-row">
+                        <div class="inv-stat-card">
+                            <div class="inv-stat-icon inv-icon-blue">
+                                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/><polyline points="3.27 6.96 12 12.01 20.73 6.96"/><line x1="12" y1="22.08" x2="12" y2="12"/></svg>
+                            </div>
+                            <div class="inv-stat-info">
+                                <span class="inv-stat-label">Total Products</span>
+                                <div class="inv-stat-val font-digit" id="inv-stat-products">0</div>
+                                <span class="inv-stat-sub" id="inv-stat-products-sub">Unique items in stock</span>
+                            </div>
+                        </div>
+
+                        <div class="inv-stat-card">
+                            <div class="inv-stat-icon inv-icon-orange">
+                                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 21V5a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v16"/></svg>
+                            </div>
+                            <div class="inv-stat-info">
+                                <span class="inv-stat-label">Total Stock Units</span>
+                                <div class="inv-stat-val font-digit" id="inv-stat-units">0</div>
+                                <span class="inv-stat-sub" id="inv-stat-units-sub">Total pieces available</span>
+                            </div>
+                        </div>
+
+                        <div class="inv-stat-card">
+                            <div class="inv-stat-icon inv-icon-red">
+                                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="1" x2="12" y2="23"/><path d="M17 5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/></svg>
+                            </div>
+                            <div class="inv-stat-info">
+                                <span class="inv-stat-label">Invested (Cost Value)</span>
+                                <div class="inv-stat-val font-digit text-red" id="inv-stat-cost">Rs. 0</div>
+                                <span class="inv-stat-sub">Total purchase cost in stock</span>
+                            </div>
+                        </div>
+
+                        <div class="inv-stat-card">
+                            <div class="inv-stat-icon inv-icon-green">
+                                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/><polyline points="17 6 23 6 23 12"/></svg>
+                            </div>
+                            <div class="inv-stat-info">
+                                <span class="inv-stat-label">Sale Value (Selling Price)</span>
+                                <div class="inv-stat-val font-digit text-green" id="inv-stat-sell">Rs. 0</div>
+                                <span class="inv-stat-sub">If all stock sold at sell price</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Alerts & Action Grid -->
+                    <div class="dashboard-grid">
+                        <!-- Low Stock Alerts Panel -->
+                        <div class="dashboard-panel panel-left">
+                            <div class="panel-header">
+                                <h3>Low Stock Alerts</h3>
+                                <span class="badge badge-alert" id="low-stock-count-badge">0 items</span>
+                            </div>
+                            <div class="panel-body">
+                                <div class="alert-list-container" id="low-stock-list">
+                                    <div class="empty-state">
+                                        <svg viewBox="0 0 24 24" width="36" height="36" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                                        <p>All products have sufficient stock levels.</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Weekly Business Chart -->
+                        <div class="dashboard-panel panel-right">
+                            <div class="panel-header">
+                                <h3>7-Day Sales & Expense Trend</h3>
+                                <div class="chart-legend">
+                                    <span class="legend-item"><span class="legend-color sales"></span>Sales</span>
+                                    <span class="legend-item"><span class="legend-color profit"></span>Net Profit</span>
+                                </div>
+                            </div>
+                            <div class="panel-body flex-center">
+                                <div class="chart-container">
+                                    <!-- A custom responsive HTML canvas for render sales graph -->
+                                    <canvas id="businessChart"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Transactions Table -->
+                    <div class="dashboard-panel mt-20">
+                        <div class="panel-header">
+                            <h3>Today's Recent Transactions</h3>
+                            <button class="btn btn-sm btn-secondary" onclick="app.switchTab('billing')">View All Sales</button>
+                        </div>
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Time</th>
+                                            <th>Invoice #</th>
+                                            <th>Customer & Vehicle</th>
+                                            <th>Items Sold</th>
+                                            <th>Labor Charges</th>
+                                            <th>Total Bill</th>
+                                            <th>Profit Earned</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="recent-sales-tbody">
+                                        <tr>
+                                            <td colspan="8" class="text-center">No sales recorded today.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB: SALES & BILLING -->
+                <section class="tab-panel" id="tab-billing">
+                    <div class="billing-container">
+                        <!-- Sales Checkout Form -->
+                        <div class="billing-card form-section">
+                            <div class="section-title">
+                                <h3>New Service / Invoice</h3>
+                                <span class="invoice-number" id="invoice-number-disp">Invoice # GULF-1000</span>
+                            </div>
+                            
+                            <!-- Customer Details -->
+                            <fieldset class="billing-fieldset">
+                                <legend>Customer & Vehicle Information</legend>
+                                <div class="form-grid">
+                                    <div class="form-group col-2">
+                                        <label for="bill-customer-phone">Customer Phone * (Reminders & WhatsApp)</label>
+                                        <div class="input-with-search">
+                                            <input type="text" id="bill-customer-phone" placeholder="e.g. 03001234567" required autocomplete="off">
+                                            <div id="phone-autocomplete-results" class="autocomplete-dropdown" style="display:none;"></div>
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-2">
+                                        <label for="bill-customer-name">Customer Name</label>
+                                        <input type="text" id="bill-customer-name" placeholder="Customer Name">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="bill-vehicle-no">Vehicle Registration # *</label>
+                                        <input type="text" id="bill-vehicle-no" placeholder="e.g. LEC-14-1234" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="bill-vehicle-model">Vehicle Model</label>
+                                        <input type="text" id="bill-vehicle-model" placeholder="e.g. Suzuki Alto / Honda Civic">
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="bill-current-mileage">Current Mileage (km) *</label>
+                                        <input type="number" id="bill-current-mileage" placeholder="e.g. 85400" min="0" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="bill-next-change-mileage">Next Oil/Tuning Mileage (km)</label>
+                                        <input type="number" id="bill-next-change-mileage" placeholder="Automatic (+3000 km)" min="0">
+                                    </div>
+                                </div>
+                            </fieldset>
+
+                            <!-- Add Products to Cart -->
+                            <fieldset class="billing-fieldset mt-15">
+                                <legend>Service Items & Engine Oil</legend>
+                                <div class="item-selection-grid">
+                                    <div class="form-group select-part-group">
+                                        <label for="bill-select-product">Select Oil / Part from Inventory</label>
+                                        <select id="bill-select-product">
+                                            <option value="">-- Choose Inventory Product --</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group qty-group">
+                                        <label for="bill-product-qty">Qty</label>
+                                        <input type="number" id="bill-product-qty" value="1" min="1" max="100">
+                                    </div>
+                                    <button class="btn btn-secondary btn-icon" type="button" id="btn-add-to-cart">
+                                        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                        <span>Add Item</span>
+                                    </button>
+                                </div>
+
+                                <!-- Tuning / Service Charges (Labor) -->
+                                <div class="tuning-charges-row mt-15">
+                                    <div class="form-group flex-1">
+                                        <label for="bill-labor-desc">Tuning / Service Description</label>
+                                        <input type="text" id="bill-labor-desc" placeholder="e.g. Tuning, Oil Filter change, General servicing">
+                                    </div>
+                                    <div class="form-group labor-amt-group">
+                                        <label for="bill-labor-charges">Labor Charges (Rs.)</label>
+                                        <input type="number" id="bill-labor-charges" placeholder="e.g. 800" min="0" value="0">
+                                    </div>
+                                </div>
+                            </fieldset>
+                        </div>
+
+                        <!-- Invoice Receipt Preview & Summary -->
+                        <div class="billing-card summary-section">
+                            <div class="summary-title">
+                                <h3>Service Receipt Summary</h3>
+                            </div>
+                            
+                            <div class="cart-items-container">
+                                <table class="cart-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Item / Service</th>
+                                            <th class="text-center">Qty</th>
+                                            <th class="text-right">Price</th>
+                                            <th class="text-right">Total</th>
+                                            <th class="text-center"></th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="cart-tbody">
+                                        <tr>
+                                            <td colspan="5" class="empty-cart-text">No items added to invoice.</td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
+
+                            <div class="summary-calculations">
+                                <div class="calc-row">
+                                    <span>Products Subtotal</span>
+                                    <span id="calc-products-total">Rs. 0</span>
+                                </div>
+                                <div class="calc-row text-cyan">
+                                    <span>Labor / Service Charges</span>
+                                    <span id="calc-labor-charges">Rs. 0</span>
+                                </div>
+                                <div class="calc-row">
+                                    <span>Discount (Rs.)</span>
+                                    <input type="number" id="bill-discount" value="0" min="0" class="input-inline-discount">
+                                </div>
+                                <hr class="calc-divider">
+                                <div class="calc-row grand-total">
+                                    <span>Total Payable</span>
+                                    <span id="calc-grand-total">Rs. 0</span>
+                                </div>
+                                <div class="calc-row profit-estimate text-green" id="calc-profit-estimate-container">
+                                    <span>Estimated Profit</span>
+                                    <span id="calc-profit-estimate">Rs. 0</span>
+                                </div>
+                            </div>
+
+                            <div class="checkout-actions">
+                                <button class="btn btn-secondary flex-1" id="btn-reset-invoice">
+                                    <span>Reset</span>
+                                </button>
+                                <button class="btn btn-primary btn-lg flex-2" id="btn-complete-invoice">
+                                    <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/></svg>
+                                    <span>Complete & Print Receipt</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Past Transactions History Panel -->
+                    <div class="dashboard-panel mt-20">
+                        <div class="panel-header">
+                            <h3>Invoice History</h3>
+                            <div class="search-box">
+                                <input type="text" id="sales-search-input" placeholder="Search invoices by customer, car, or item...">
+                            </div>
+                        </div>
+                        <div class="panel-body">
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Invoice #</th>
+                                            <th>Date & Time</th>
+                                            <th>Customer Info</th>
+                                            <th>Vehicle Details</th>
+                                            <th>Current Mileage</th>
+                                            <th>Bill Amount</th>
+                                            <th>Net Profit</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="all-sales-tbody">
+                                        <!-- Will be filled by JavaScript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB: INVENTORY -->
+                <section class="tab-panel" id="tab-inventory">
+                    <div class="inventory-controls">
+                        <div class="search-filter-row">
+                            <div class="search-box flex-1">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" class="search-icon"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                                <input type="text" id="inventory-search-input" placeholder="Search by engine oil name, category, or brand...">
+                            </div>
+                            <div class="filter-group">
+                                <select id="inventory-filter-stock">
+                                    <option value="all">All Stock Statuses</option>
+                                    <option value="low">Low Stock Only</option>
+                                    <option value="out">Out of Stock</option>
+                                </select>
+                            </div>
+                        </div>
+                        <button class="btn btn-primary" id="btn-add-product">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                            <span>Add New Product</span>
+                        </button>
+                    </div>
+
+                    <div class="dashboard-panel">
+                        <div class="panel-body p-0">
+                            <div class="table-responsive">
+                                <table class="data-table" id="inventory-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Product Code</th>
+                                            <th>Product Name</th>
+                                            <th>Category</th>
+                                            <th class="text-right">Purchase Price (Cost)</th>
+                                            <th class="text-right">Selling Price (Customer)</th>
+                                            <th class="text-center">Stock Level</th>
+                                            <th class="text-center">Min Alert Level</th>
+                                            <th class="text-center">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="inventory-tbody">
+                                        <!-- Populated dynamically -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB: EXPENSES REGISTER -->
+                <section class="tab-panel" id="tab-expenses">
+                    <div class="expenses-layout">
+                        <!-- Add Expense Form -->
+                        <div class="expense-card add-expense-form-panel">
+                            <div class="panel-header">
+                                <h3>Add Shop Expense</h3>
+                            </div>
+                            <div class="panel-body">
+                                <form id="expense-form">
+                                    <div class="form-group">
+                                        <label for="expense-desc">Expense Description *</label>
+                                        <input type="text" id="expense-desc" placeholder="e.g. Electric bill, Helper salary, Tea/Lunch, Rent" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="expense-amount">Amount (Rs.) *</label>
+                                        <input type="number" id="expense-amount" placeholder="e.g. 500" min="1" required>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="expense-category">Category</label>
+                                        <select id="expense-category">
+                                            <option value="Refreshment">Refreshment (Tea / Food)</option>
+                                            <option value="Salaries">Helper / Labor Wages</option>
+                                            <option value="Utilities">Shop Utility Bills (Electricity, Water)</option>
+                                            <option value="Rent">Shop Rent</option>
+                                            <option value="Consumables">Shop Consumables (Rags, Cleaner)</option>
+                                            <option value="Other">Other Expenses</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="expense-date">Expense Date</label>
+                                        <input type="date" id="expense-date" required>
+                                    </div>
+                                    <button type="submit" class="btn btn-primary w-100 mt-15">
+                                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                                        <span>Add Expense Entry</span>
+                                    </button>
+                                </form>
+                            </div>
+                        </div>
+
+                        <!-- Expenses List Registry -->
+                        <div class="expense-card expenses-list-panel">
+                            <div class="panel-header">
+                                <h3>Expense Log Book</h3>
+                                <div class="expense-total-display">
+                                    Total: <strong id="expense-log-total" class="text-red">Rs. 0</strong>
+                                </div>
+                            </div>
+                            <div class="panel-body">
+                                <div class="table-responsive">
+                                    <table class="data-table">
+                                        <thead>
+                                            <tr>
+                                                <th>Date</th>
+                                                <th>Description</th>
+                                                <th>Category</th>
+                                                <th class="text-right">Amount (Rs.)</th>
+                                                <th class="text-center">Action</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody id="expenses-tbody">
+                                            <!-- Dynamically populated -->
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB: CUSTOMERS & CARS -->
+                <section class="tab-panel" id="tab-customers">
+                    <div class="inventory-controls">
+                        <div class="search-box flex-1">
+                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" class="search-icon"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                            <input type="text" id="customer-search-input" placeholder="Search by customer name, phone number, vehicle plate, or vehicle model...">
+                        </div>
+                    </div>
+
+                    <div class="dashboard-panel">
+                        <div class="panel-body p-0">
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Customer Name</th>
+                                            <th>Phone Number</th>
+                                            <th>Vehicle Plate #</th>
+                                            <th>Vehicle Model</th>
+                                            <th class="text-center">Total Visits</th>
+                                            <th class="text-right">Total Spent (Rs.)</th>
+                                            <th>Last Visit Date</th>
+                                            <th class="text-center">Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="customers-tbody">
+                                        <!-- Filled by Javascript -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB: SERVICE REMINDERS -->
+                <section class="tab-panel" id="tab-reminders">
+                    <div class="dashboard-panel">
+                        <div class="panel-header">
+                            <h3>Automated Oil Change / Tuning Reminders</h3>
+                            <div class="reminder-settings">
+                                <span>Remind after:</span>
+                                <select id="reminder-days-threshold" class="select-inline">
+                                    <option value="90">90 Days (3 Months)</option>
+                                    <option value="120">120 Days (4 Months)</option>
+                                    <option value="180">180 Days (6 Months)</option>
+                                </select>
+                                <span>or</span>
+                                <select id="reminder-km-threshold" class="select-inline">
+                                    <option value="3000">3000 km</option>
+                                    <option value="5000">5000 km</option>
+                                    <option value="10000">10000 km</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="panel-body">
+                            <p class="description-text mb-15">
+                                Below is the list of customers whose next service is due, based on their date of last visit or estimated/entered mileage:
+                            </p>
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Customer</th>
+                                            <th>Phone Number</th>
+                                            <th>Vehicle Details</th>
+                                            <th>Last Visit Mileage</th>
+                                            <th>Last Visit Date</th>
+                                            <th class="text-center">Alert Status</th>
+                                            <th class="text-center">Send WhatsApp Reminder</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="reminders-tbody">
+                                        <!-- Populated via script -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- TAB: BACKUP & SETTINGS -->
+                <section class="tab-panel" id="tab-settings">
+                    <div class="settings-grid">
+                        <!-- Data Backup card -->
+                        <div class="dashboard-panel">
+                            <div class="panel-header">
+                                <h3>Data Protection & Backups</h3>
+                            </div>
+                            <div class="panel-body">
+                                <p class="description-text mb-15">
+                                    Gulf Engine Oil Center software stores your transactions, stock levels, and expenses safely inside this web browser. 
+                                    To make sure you never lose your data, please download backups regularly.
+                                </p>
+                                <div class="settings-actions">
+                                    <button class="btn btn-primary" id="btn-export-data">
+                                        <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+                                        <span>Download Data Backup (Export JSON)</span>
+                                    </button>
+                                    
+                                    <div class="restore-container mt-15">
+                                        <label for="restore-file-input" class="btn btn-secondary w-100 text-center cursor-pointer">
+                                            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+                                            <span>Restore Data from Backup File</span>
+                                        </label>
+                                        <input type="file" id="restore-file-input" accept=".json" style="display:none;">
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Reset / Demo Data Card -->
+                        <div class="dashboard-panel">
+                            <div class="panel-header">
+                                <h3>System Settings</h3>
+                            </div>
+                            <div class="panel-body">
+                                <p class="description-text mb-15">
+                                    Use these options to populate demo items for testing, or wipe the database clean to start afresh.
+                                </p>
+                                <div class="settings-actions vertical">
+                                    <button class="btn btn-secondary" id="btn-load-demo">
+                                        <span>Load Sample Demo Data</span>
+                                    </button>
+                                    <button class="btn btn-danger" id="btn-wipe-data">
+                                        <span>Wipe All Data (Reset System)</span>
+                                    </button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+        
+        <!-- Mobile App Bottom Navigation (Visible only on mobile) -->
+        <nav class="mobile-bottom-nav">
+            <a href="#" class="mobile-nav-item active" data-tab="dashboard">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="7" height="9"/><rect x="14" y="3" width="7" height="5"/><rect x="14" y="12" width="7" height="9"/><rect x="3" y="16" width="7" height="5"/></svg>
+                <span>Home</span>
+            </a>
+            <a href="#" class="mobile-nav-item" data-tab="billing">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="M10 4v16M2 10h20M6 4v6M14 4v6"/></svg>
+                <span>Billing</span>
+            </a>
+            <a href="#" class="mobile-nav-item" data-tab="inventory">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>
+                <span>Stock</span>
+            </a>
+            <a href="#" class="mobile-nav-item" data-tab="customers">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+                <span>Clients</span>
+            </a>
+            <a href="#" class="mobile-nav-item" id="mobile-menu-more">
+                <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="1"/><circle cx="12" cy="5" r="1"/><circle cx="12" cy="19" r="1"/></svg>
+                <span>More</span>
+            </a>
+        </nav>
+    </div>
+
+    <!-- ==================== MODAL WINDOWS ==================== -->
+
+    <!-- Add/Edit Product Modal -->
+    <div class="modal-backdrop" id="product-modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="product-modal-title">Add New Product</h3>
+                <button class="modal-close-btn">&times;</button>
+            </div>
+            <form id="product-form">
+                <input type="hidden" id="product-id">
+                <div class="modal-body">
+                    <div class="form-group">
+                        <label for="product-name">Product Name *</label>
+                        <input type="text" id="product-name" placeholder="e.g. Gulf Formula G 5W-40 (4L)" required>
+                    </div>
+                    <div class="form-grid-2">
+                        <div class="form-group">
+                            <label for="product-code">Product Code / SKU</label>
+                            <input type="text" id="product-code" placeholder="e.g. GULF-5W40-4L">
+                        </div>
+                        <div class="form-group">
+                            <label for="product-category">Category</label>
+                            <select id="product-category">
+                                <option value="Engine Oil">Engine Oil</option>
+                                <option value="Oil Filter">Oil Filter</option>
+                                <option value="Air Filter">Air Filter</option>
+                                <option value="Spark Plugs">Spark Plugs</option>
+                                <option value="Brake Pads">Brake Pads & Fluid</option>
+                                <option value="Coolant">Coolant & Additives</option>
+                                <option value="Tuning Parts">Tuning Parts</option>
+                                <option value="Other">Other Accessories</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="product-cost-price">Cost Price (Rs.) *</label>
+                            <input type="number" id="product-cost-price" placeholder="e.g. 3500" min="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="product-selling-price">Selling Price (Rs.) *</label>
+                            <input type="number" id="product-selling-price" placeholder="e.g. 4200" min="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="product-stock">Stock Quantity *</label>
+                            <input type="number" id="product-stock" placeholder="e.g. 24" min="0" required>
+                        </div>
+                        <div class="form-group">
+                            <label for="product-min-stock">Min Low-Stock Level *</label>
+                            <input type="number" id="product-min-stock" value="5" min="0" required>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary modal-cancel-btn">Cancel</button>
+                    <button type="submit" class="btn btn-primary">Save Product</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Customer History Modal -->
+    <div class="modal-backdrop" id="customer-history-modal">
+        <div class="modal-content modal-lg">
+            <div class="modal-header">
+                <h3>Customer Service & Tuning History</h3>
+                <button class="modal-close-btn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="customer-profile-card">
+                    <div class="profile-info-grid">
+                        <div>
+                            <span class="profile-lbl">Customer Name</span>
+                            <div class="profile-val" id="cust-modal-name">Sajid Khan</div>
+                        </div>
+                        <div>
+                            <span class="profile-lbl">Phone Number</span>
+                            <div class="profile-val" id="cust-modal-phone">03001234567</div>
+                        </div>
+                        <div>
+                            <span class="profile-lbl">Vehicle Plate #</span>
+                            <div class="profile-val font-digit text-orange" id="cust-modal-vehicle">LEC-14-5544</div>
+                        </div>
+                        <div>
+                            <span class="profile-lbl">Vehicle Model</span>
+                            <div class="profile-val" id="cust-modal-model">Toyota Corolla 1.6</div>
+                        </div>
+                    </div>
+                </div>
+
+                <h4 class="mt-20 mb-10">Historical Services & Invoices</h4>
+                <div class="table-responsive">
+                    <table class="data-table">
+                        <thead>
+                            <tr>
+                                <th>Invoice #</th>
+                                <th>Date & Time</th>
+                                <th>Milage (km)</th>
+                                <th>Products Used</th>
+                                <th>Labor Charge</th>
+                                <th class="text-right">Total Paid (Rs.)</th>
+                            </tr>
+                        </thead>
+                        <tbody id="cust-modal-history-tbody">
+                            <!-- Filled dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary modal-cancel-btn">Close Window</button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- ==================== RECEIPT PRINT TEMPLATE (Hidden from normal UI) ==================== -->
+    <div class="print-receipt-container" id="print-receipt-section">
+        <div class="print-header">
+            <h2>GULF ENGINE OIL CENTER</h2>
+            <p class="subtitle">Car Tuning & Oil Change Specialist</p>
+            <p class="address">Opposite Main Highway, Near GT Road, Pakistan</p>
+            <p class="phone">Mob: 0300-1234567 / 0321-7654321</p>
+        </div>
+        
+        <div class="divider-dashed"></div>
+        
+        <div class="receipt-meta">
+            <div class="meta-row">
+                <span><strong>Invoice:</strong> <span id="pr-invoice-num">GULF-1001</span></span>
+                <span><strong>Date:</strong> <span id="pr-invoice-date">2026-05-22</span></span>
+            </div>
+            <div class="meta-row">
+                <span><strong>Time:</strong> <span id="pr-invoice-time">06:24 AM</span></span>
+            </div>
+            <div class="meta-row">
+                <span><strong>Customer:</strong> <span id="pr-cust-name">Walk-in</span></span>
+                <span><strong>Phone:</strong> <span id="pr-cust-phone">03000000000</span></span>
+            </div>
+            <div class="meta-row">
+                <span><strong>Vehicle #:</strong> <span id="pr-vehicle-no" class="font-bold">LEC-14-1234</span></span>
+                <span><strong>Model:</strong> <span id="pr-vehicle-model">Civic</span></span>
+            </div>
+            <div class="meta-row">
+                <span><strong>Mileage:</strong> <span id="pr-mileage">84500 km</span></span>
+                <span><strong>Next Oil:</strong> <span id="pr-next-mileage">87500 km</span></span>
+            </div>
+        </div>
+        
+        <div class="divider-dashed"></div>
+        
+        <table class="receipt-table">
+            <thead>
+                <tr>
+                    <th>Item Description</th>
+                    <th class="text-center">Qty</th>
+                    <th class="text-right">Rate</th>
+                    <th class="text-right">Amount</th>
+                </tr>
+            </thead>
+            <tbody id="pr-tbody">
+                <!-- Items list -->
+            </tbody>
+        </table>
+        
+        <div class="divider-dashed"></div>
+        
+        <div class="receipt-summary">
+            <div class="summary-row">
+                <span>Products Total:</span>
+                <span id="pr-products-total">Rs. 0</span>
+            </div>
+            <div class="summary-row">
+                <span>Tuning / Labor Charges:</span>
+                <span id="pr-labor-total">Rs. 0</span>
+            </div>
+            <div class="summary-row" id="pr-discount-row">
+                <span>Discount:</span>
+                <span id="pr-discount">Rs. 0</span>
+            </div>
+            <div class="divider-single"></div>
+            <div class="summary-row grand-total">
+                <span><strong>Grand Total:</strong></span>
+                <span id="pr-grand-total"><strong>Rs. 0</strong></span>
+            </div>
+        </div>
+        
+        <div class="divider-dashed"></div>
+        
+        <div class="print-footer">
+            <p><strong>Next Oil Change Reminder:</strong></p>
+            <p>Please change your oil at <span id="pr-next-mileage-reminder" class="font-bold">87,500 km</span> or after 3 months.</p>
+            <br>
+            <p class="thankyou">Thank you for choosing Gulf Engine Oil Center!</p>
+            <p class="credits">Powered by Shop Software Solutions</p>
+        </div>
+    </div>
+
+    <!-- Application Script -->
+    <script src="app.js"></script>
+</body>
+</html>
