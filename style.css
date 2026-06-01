@@ -1612,4 +1612,34 @@ input::placeholder {
         position: absolute;
         right: 15px;
     }
+
+    /* Compact Billing Form for Mobile */
+    #tab-billing .panel-body {
+        padding: 12px;
+    }
+    
+    #tab-billing .form-group {
+        gap: 3px;
+        margin-bottom: 8px;
+    }
+
+    #tab-billing .form-grid, 
+    #tab-billing .form-grid-2 {
+        gap: 8px;
+    }
+
+    #tab-billing input, 
+    #tab-billing select {
+        padding: 8px 10px;
+        font-size: 0.85rem;
+    }
+    
+    #tab-billing label {
+        font-size: 0.75rem;
+    }
+
+    #tab-billing .btn {
+        padding: 8px 12px;
+        font-size: 0.85rem;
+    }
 }

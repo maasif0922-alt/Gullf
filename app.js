@@ -225,7 +225,7 @@ const app = {
         };
         
         // Set default date for expense form to today
-        const todayStr = new Date().toISOString().split('T')[0];
+        const todayStr = new Date().toLocaleDateString('en-CA');
         this.dom.expenseDateInput.value = todayStr;
     },
 
@@ -452,7 +452,7 @@ const app = {
     // ----------------------------------------------------
     renderDashboard: function() {
         // Today's Date representation
-        const todayStr = new Date().toISOString().split('T')[0];
+        const todayStr = new Date().toLocaleDateString('en-CA');
 
         // Today's Sales calculation
         const todaySales = state.sales.filter(sale => sale.date === todayStr);
@@ -598,7 +598,7 @@ const app = {
         for (let i = 6; i >= 0; i--) {
             const d = new Date();
             d.setDate(d.getDate() - i);
-            const dateStr = d.toISOString().split('T')[0];
+            const dateStr = d.toLocaleDateString('en-CA');
             days.push(dateStr);
             
             // Format labels as 'Mon 22', 'Tue 23'
@@ -1148,7 +1148,7 @@ const app = {
         const netProfit = (prodSubtotal - prodCosttotal) + state.cart.laborCharges - state.cart.discount;
 
         const now = new Date();
-        const dateStr = now.toISOString().split('T')[0];
+        const dateStr = now.toLocaleDateString('en-CA');
         let hours = now.getHours();
         let minutes = now.getMinutes();
         const ampm = hours >= 12 ? 'PM' : 'AM';
@@ -1257,6 +1257,55 @@ const app = {
         }
     },
 
+    sendInvoiceWhatsApp: function(saleId) {
+        const sale = state.sales.find(s => s.id === saleId);
+        if (!sale) return;
+
+        let rawPhone = sale.customerPhone.replace(/[^0-9]/g, "");
+        if (!rawPhone || rawPhone === "") {
+            alert("Customer phone number is missing. Cannot send WhatsApp message.");
+            return;
+        }
+        if (rawPhone.startsWith("0")) {
+            rawPhone = "92" + rawPhone.slice(1);
+        } else if (!rawPhone.startsWith("92")) {
+            rawPhone = "92" + rawPhone;
+        }
+
+        let itemsText = "";
+        sale.items.forEach(it => {
+            itemsText += `${it.name} (x${it.qty}) = Rs. ${it.sellingPrice * it.qty}\n`;
+        });
+        if (sale.laborCharges > 0) {
+            itemsText += `${sale.laborDesc || 'Tuning Service'} = Rs. ${sale.laborCharges}\n`;
+        }
+        if (sale.discount > 0) {
+            itemsText += `Discount = - Rs. ${sale.discount}\n`;
+        }
+
+        let nextMilText = sale.nextMileage ? `Next Oil Change: ${sale.nextMileage.toLocaleString()} km\n` : "";
+
+        const message = `*Gulf Engine Oil Center*
+Prop: M.Asif and M.Salman
+0348-9353023
+0343-5847538
+Address: Main Multan Road, Malik plaza, Near wensam collage
+
+*Invoice Receipt*
+Date: ${sale.date} ${sale.time}
+Invoice: ${sale.invoiceNum}
+Vehicle: ${sale.vehicleNo}
+${nextMilText}
+------------------------
+${itemsText}------------------------
+*Total Bill: Rs. ${sale.totalPayable.toLocaleString()}*
+
+Thank you for visiting!`;
+
+        const waLink = `https://api.whatsapp.com/send?phone=${rawPhone}&text=${encodeURIComponent(message)}`;
+        window.open(waLink, "_blank");
+    },
+
     renderInvoiceHistory: function() {
         const query = this.dom.salesSearchInput.value.toLowerCase().trim();
         let html = "";
@@ -1297,7 +1346,8 @@ const app = {
                         <td data-label="Net Profit" class="text-right font-bold text-green font-digit">Rs. ${sale.profit.toLocaleString()}</td>
                         <td data-label="Actions">
                             <div class="action-btns-cell">
-                                <button class="btn btn-sm btn-secondary" onclick="app.printInvoiceById('${sale.id}')">Print Receipt</button>
+                                <button class="btn btn-sm btn-secondary" onclick="app.printInvoiceById('${sale.id}')">Print</button>
+                                <button class="btn btn-sm btn-success" onclick="app.sendInvoiceWhatsApp('${sale.id}')">WhatsApp</button>
                                 <button class="btn btn-sm btn-danger" onclick="app.deleteInvoice('${sale.id}')">Delete</button>
                             </div>
                         </td>
@@ -1635,7 +1685,7 @@ Engine ki behtari aur lambi zindagi ke liye time par oil change zaroor karwayein
         const blob = new Blob([jsonStr], { type: "application/json" });
         const url = URL.createObjectURL(blob);
         
-        const dateStr = new Date().toISOString().split('T')[0];
+        const dateStr = new Date().toLocaleDateString('en-CA');
         
         const a = document.createElement("a");
         a.href = url;
@@ -1709,7 +1759,7 @@ Engine ki behtari aur lambi zindagi ke liye time par oil change zaroor karwayein
         for (let i = 6; i >= 0; i--) {
             const d = new Date();
             d.setDate(d.getDate() - i);
-            const dateStr = d.toISOString().split('T')[0];
+            const dateStr = d.toLocaleDateString('en-CA');
 
             // 1 or 2 sales per day
             const salesCount = Math.floor(Math.random() * 2) + 1;
@@ -1761,7 +1811,7 @@ Engine ki behtari aur lambi zindagi ke liye time par oil change zaroor karwayein
         // Add 1 very old sale to test Reminders (dated 4 months ago)
         const pastDate = new Date();
         pastDate.setMonth(pastDate.getMonth() - 4);
-        const pastDateStr = pastDate.toISOString().split('T')[0];
+        const pastDateStr = pastDate.toLocaleDateString('en-CA');
         
         sampleSales.push({
             id: "demo-old-sale",
@@ -1791,15 +1841,15 @@ Engine ki behtari aur lambi zindagi ke liye time par oil change zaroor karwayein
 
         // 3. Load sample Expenses
         const sampleExpenses = [
-            { id: "e1", desc: "Helper wages", amount: 400, category: "Salaries", date: new Date().toISOString().split('T')[0] },
-            { id: "e2", desc: "Tea & biscuits for staff", amount: 150, category: "Refreshment", date: new Date().toISOString().split('T')[0] }
+            { id: "e1", desc: "Helper wages", amount: 400, category: "Salaries", date: new Date().toLocaleDateString('en-CA') },
+            { id: "e2", desc: "Tea & biscuits for staff", amount: 150, category: "Refreshment", date: new Date().toLocaleDateString('en-CA') }
         ];
         
         // Add random helper expenses in past days
         for (let i = 6; i > 0; i--) {
             const d = new Date();
             d.setDate(d.getDate() - i);
-            const dateStr = d.toISOString().split('T')[0];
+            const dateStr = d.toLocaleDateString('en-CA');
             sampleExpenses.push({
                 id: `demo-e-${dateStr}`,
                 desc: "Tuning helper daily allowance",
