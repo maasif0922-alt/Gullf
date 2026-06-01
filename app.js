@@ -3,6 +3,24 @@
  * Core Application Script
  */
 
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
+import { getFirestore, doc, setDoc, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+import { getAnalytics } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-analytics.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBa9k-6rAWQ5Ad2ZHDZi_wluQm-G-DtlKI",
+  authDomain: "shop-5a85b.firebaseapp.com",
+  projectId: "shop-5a85b",
+  storageBucket: "shop-5a85b.firebasestorage.app",
+  messagingSenderId: "411947501193",
+  appId: "1:411947501193:web:e2fffa3264f54359376858",
+  measurementId: "G-4J2KMGQ4MG"
+};
+
+const firebaseApp = initializeApp(firebaseConfig);
+const db = getFirestore(firebaseApp);
+const analytics = getAnalytics(firebaseApp);
+
 // Application State
 const state = {
     inventory: [],
@@ -24,6 +42,7 @@ const app = {
     // INITIALIZATION & LIFECYCLE
     // ----------------------------------------------------
     init: function() {
+        window.app = this;
         this.loadData();
         this.initDOM();
         this.bindEvents();
@@ -36,29 +55,60 @@ const app = {
         this.updateBillingProductDropdown();
     },
 
-    // Load data from LocalStorage
+    // Load data from Firebase
     loadData: function() {
         try {
-            state.inventory = JSON.parse(localStorage.getItem("gulf_inventory")) || [];
-            state.sales = JSON.parse(localStorage.getItem("gulf_sales")) || [];
-            state.expenses = JSON.parse(localStorage.getItem("gulf_expenses")) || [];
+            onSnapshot(doc(db, "shopData", "inventory"), (docSnap) => {
+                if (docSnap.exists()) {
+                    state.inventory = docSnap.data().items || [];
+                } else {
+                    state.inventory = [];
+                }
+                if (this.dom) {
+                    if (state.activeTab === "dashboard") this.renderDashboard();
+                    if (state.activeTab === "inventory") this.renderInventory();
+                    this.updateBillingProductDropdown();
+                    this.updateGlobalBadges();
+                }
+            });
+
+            onSnapshot(doc(db, "shopData", "sales"), (docSnap) => {
+                if (docSnap.exists()) {
+                    state.sales = docSnap.data().items || [];
+                } else {
+                    state.sales = [];
+                }
+                if (this.dom) {
+                    if (state.activeTab === "dashboard") this.renderDashboard();
+                    if (state.activeTab === "billing") this.renderInvoiceHistory();
+                }
+            });
+
+            onSnapshot(doc(db, "shopData", "expenses"), (docSnap) => {
+                if (docSnap.exists()) {
+                    state.expenses = docSnap.data().items || [];
+                } else {
+                    state.expenses = [];
+                }
+                if (this.dom) {
+                    if (state.activeTab === "dashboard") this.renderDashboard();
+                    if (state.activeTab === "expenses") this.renderExpenses();
+                }
+            });
         } catch (e) {
-            console.error("Error reading from LocalStorage:", e);
-            state.inventory = [];
-            state.sales = [];
-            state.expenses = [];
+            console.error("Error setting up Firebase listeners:", e);
         }
     },
 
-    // Save data to LocalStorage
+    // Save data to Firebase
     saveData: function() {
         try {
-            localStorage.setItem("gulf_inventory", JSON.stringify(state.inventory));
-            localStorage.setItem("gulf_sales", JSON.stringify(state.sales));
-            localStorage.setItem("gulf_expenses", JSON.stringify(state.expenses));
+            setDoc(doc(db, "shopData", "inventory"), { items: state.inventory });
+            setDoc(doc(db, "shopData", "sales"), { items: state.sales });
+            setDoc(doc(db, "shopData", "expenses"), { items: state.expenses });
         } catch (e) {
-            console.error("Error saving to LocalStorage:", e);
-            alert("Warning: Data storage limit exceeded or blocked! Please backup your data.");
+            console.error("Error saving to Firebase:", e);
+            alert("Warning: Error syncing to cloud! Please check your internet connection.");
         }
     },
 
