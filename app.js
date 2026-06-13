@@ -160,6 +160,9 @@ const app = {
             lowStockList: document.getElementById("low-stock-list"),
             recentSalesTbody: document.getElementById("recent-sales-tbody"),
             businessChart: document.getElementById("businessChart"),
+            dashboardSearchInput: document.getElementById("dashboard-search-input"),
+            dashboardSearchResultsContainer: document.getElementById("dashboard-search-results-container"),
+            dashboardSearchTbody: document.getElementById("dashboard-search-tbody"),
             
             // Inventory
             inventoryTbody: document.getElementById("inventory-tbody"),
@@ -311,6 +314,11 @@ const app = {
 
         this.dom.inventorySearch.addEventListener("input", () => this.renderInventory());
         this.dom.inventoryFilterStock.addEventListener("change", () => this.renderInventory());
+
+        // ---------------- DASHBOARD EVENTS ----------------
+        if(this.dom.dashboardSearchInput) {
+            this.dom.dashboardSearchInput.addEventListener("input", () => this.handleDashboardSearch());
+        }
 
         // ---------------- EXPENSES EVENTS ----------------
         this.dom.expenseForm.addEventListener("submit", (e) => {
@@ -694,6 +702,51 @@ const app = {
             ctx.font = "10px Inter";
             ctx.fillText(dateLabels[i], centerX, paddingTop + chartHeight + 10);
         }
+    },
+
+    handleDashboardSearch: function() {
+        const query = this.dom.dashboardSearchInput.value.toLowerCase().trim();
+        if (query === "") {
+            this.dom.dashboardSearchResultsContainer.style.display = "none";
+            return;
+        }
+
+        const filtered = state.inventory.filter(item => {
+            return item.name.toLowerCase().includes(query) || 
+                   (item.code && item.code.toLowerCase().includes(query));
+        });
+
+        let html = "";
+        if (filtered.length === 0) {
+            html = `<tr><td colspan="6" class="text-center">No products found for "${query}"</td></tr>`;
+        } else {
+            filtered.forEach(item => {
+                let stockClass = "badge-success";
+                let stockLabel = "In Stock";
+                if (item.stock === 0) {
+                    stockClass = "badge-alert";
+                    stockLabel = "Out Of Stock";
+                } else if (item.stock <= item.minStock) {
+                    stockClass = "badge-warning";
+                    stockLabel = "Low Stock";
+                }
+
+                html += `
+                    <tr class="${item.stock === 0 ? 'bg-row-out' : ''}">
+                        <td data-label="Code / Number"><span class="font-digit font-bold">${item.code || 'N/A'}</span></td>
+                        <td data-label="Product Name"><span class="font-bold">${item.name}</span></td>
+                        <td data-label="Category"><span class="category-lbl">${item.category}</span></td>
+                        <td data-label="Buying Price" class="text-right font-digit">Rs. ${item.costPrice.toLocaleString()}</td>
+                        <td data-label="Selling Price" class="text-right font-digit text-orange">Rs. ${item.sellingPrice.toLocaleString()}</td>
+                        <td data-label="Stock" class="text-center font-bold font-digit">
+                            <span style="font-size:1.1rem; margin-right: 6px;">${item.stock}</span>
+                            <span class="badge ${stockClass}">${stockLabel}</span>
+                        </td>
+                    </tr>`;
+            });
+        }
+        this.dom.dashboardSearchTbody.innerHTML = html;
+        this.dom.dashboardSearchResultsContainer.style.display = "block";
     },
 
     // ----------------------------------------------------

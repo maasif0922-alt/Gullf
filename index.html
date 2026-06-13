@@ -196,8 +196,38 @@
                         </div>
                     </div>
 
+                    <!-- Quick Product Search (Home Page) -->
+                    <div class="dashboard-panel mt-20" id="quick-search-panel">
+                        <div class="panel-header">
+                            <h3>Quick Product Search</h3>
+                            <div class="search-box">
+                                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" class="search-icon"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+                                <input type="text" id="dashboard-search-input" placeholder="Search product by name or code number...">
+                            </div>
+                        </div>
+                        <div class="panel-body" id="dashboard-search-results-container" style="display: none;">
+                            <div class="table-responsive">
+                                <table class="data-table">
+                                    <thead>
+                                        <tr>
+                                            <th>Code / Number</th>
+                                            <th>Product Name</th>
+                                            <th>Category</th>
+                                            <th class="text-right">Buying Price</th>
+                                            <th class="text-right">Selling Price</th>
+                                            <th class="text-center">Stock</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="dashboard-search-tbody">
+                                        <!-- Search results will appear here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
                     <!-- Alerts & Action Grid -->
-                    <div class="dashboard-grid">
+                    <div class="dashboard-grid mt-20">
                         <!-- Low Stock Alerts Panel -->
                         <div class="dashboard-panel panel-left">
                             <div class="panel-header">
