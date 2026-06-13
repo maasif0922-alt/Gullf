@@ -26,6 +26,8 @@ const state = {
     inventory: [],
     sales: [],
     expenses: [],
+    credits: [],
+    investments: [],
     hiddenCustomers: [],
     cart: {
         items: [],
@@ -108,6 +110,28 @@ const app = {
                     if (state.activeTab === "reminders") this.renderServiceReminders();
                 }
             });
+
+            onSnapshot(doc(db, "shopData", "credits"), (docSnap) => {
+                if (docSnap.exists()) {
+                    state.credits = docSnap.data().items || [];
+                } else {
+                    state.credits = [];
+                }
+                if (this.dom) {
+                    if (state.activeTab === "credit") this.renderCredits();
+                }
+            });
+
+            onSnapshot(doc(db, "shopData", "investments"), (docSnap) => {
+                if (docSnap.exists()) {
+                    state.investments = docSnap.data().items || [];
+                } else {
+                    state.investments = [];
+                }
+                if (this.dom) {
+                    if (state.activeTab === "dashboard") this.renderDashboard();
+                }
+            });
         } catch (e) {
             console.error("Error setting up Firebase listeners:", e);
         }
@@ -120,6 +144,8 @@ const app = {
             setDoc(doc(db, "shopData", "sales"), { items: state.sales });
             setDoc(doc(db, "shopData", "expenses"), { items: state.expenses });
             setDoc(doc(db, "shopData", "hiddenCustomers"), { items: state.hiddenCustomers });
+            setDoc(doc(db, "shopData", "credits"), { items: state.credits });
+            setDoc(doc(db, "shopData", "investments"), { items: state.investments });
         } catch (e) {
             console.error("Error saving to Firebase:", e);
             alert("Warning: Error syncing to cloud! Please check your internet connection.");
@@ -137,6 +163,8 @@ const app = {
             headerDate: document.getElementById("header-date"),
             headerTime: document.getElementById("header-time"),
             quickSaleBtn: document.getElementById("quick-sale-btn"),
+            headerSearchBtn: document.getElementById("header-search-btn"),
+            searchModal: document.getElementById("search-modal"),
             
             // Stats
             statSales: document.getElementById("stat-sales"),
@@ -145,6 +173,7 @@ const app = {
             statExpenses: document.getElementById("stat-expenses"),
             statExpensesCount: document.getElementById("stat-expenses-count"),
             statProfit: document.getElementById("stat-profit"),
+            statMonthlyProfit: document.getElementById("stat-monthly-profit"),
             lowStockCountBadge: document.getElementById("low-stock-count-badge"),
             remindersCountBadge: document.getElementById("reminders-count-badge"),
             
@@ -163,6 +192,9 @@ const app = {
             dashboardSearchInput: document.getElementById("dashboard-search-input"),
             dashboardSearchResultsContainer: document.getElementById("dashboard-search-results-container"),
             dashboardSearchTbody: document.getElementById("dashboard-search-tbody"),
+            investmentsTbody: document.getElementById("investments-tbody"),
+            investmentModal: document.getElementById("investment-modal"),
+            investmentForm: document.getElementById("investment-form"),
             
             // Inventory
             inventoryTbody: document.getElementById("inventory-tbody"),
@@ -204,6 +236,12 @@ const app = {
             expenseLogTotal: document.getElementById("expense-log-total"),
             expenseDateInput: document.getElementById("expense-date"),
             
+            // Credits (Qarza)
+            creditForm: document.getElementById("credit-form"),
+            creditsTbody: document.getElementById("credits-tbody"),
+            creditLogTotal: document.getElementById("credit-log-total"),
+            creditDateInput: document.getElementById("credit-date"),
+            
             // Customers
             customersTbody: document.getElementById("customers-tbody"),
             customerSearch: document.getElementById("customer-search-input"),
@@ -227,9 +265,10 @@ const app = {
             btnWipeData: document.getElementById("btn-wipe-data")
         };
         
-        // Set default date for expense form to today
+        // Set default date for expense form and credit form to today
         const todayStr = new Date().toLocaleDateString('en-CA');
-        this.dom.expenseDateInput.value = todayStr;
+        if(this.dom.expenseDateInput) this.dom.expenseDateInput.value = todayStr;
+        if(this.dom.creditDateInput) this.dom.creditDateInput.value = todayStr;
     },
 
     // ----------------------------------------------------
@@ -319,12 +358,30 @@ const app = {
         if(this.dom.dashboardSearchInput) {
             this.dom.dashboardSearchInput.addEventListener("input", () => this.handleDashboardSearch());
         }
+        if(this.dom.headerSearchBtn) {
+            this.dom.headerSearchBtn.addEventListener("click", () => {
+                this.dom.searchModal.classList.add("active");
+                this.dom.dashboardSearchInput.focus();
+            });
+        }
+        if(this.dom.investmentForm) {
+            this.dom.investmentForm.addEventListener("submit", (e) => {
+                e.preventDefault();
+                this.handleInvestmentSubmit();
+            });
+        }
 
-        // ---------------- EXPENSES EVENTS ----------------
+        // ---------------- EXPENSES & CREDITS EVENTS ----------------
         this.dom.expenseForm.addEventListener("submit", (e) => {
             e.preventDefault();
             this.handleExpenseSubmit();
         });
+        if(this.dom.creditForm) {
+            this.dom.creditForm.addEventListener("submit", (e) => {
+                e.preventDefault();
+                this.handleCreditSubmit();
+            });
+        }
 
         // ---------------- BILLING / CART EVENTS ----------------
         // Add to Cart
@@ -478,6 +535,14 @@ const app = {
         // Today's Net Profit calculation
         const totalProfitSum = todaySales.reduce((acc, sale) => acc + (sale.profit || 0), 0) - totalExpensesSum;
 
+        // Monthly Net Profit calculation
+        const currentMonth = todayStr.substring(0, 7); // e.g., "2026-05"
+        const monthlySales = state.sales.filter(sale => sale.date.startsWith(currentMonth));
+        const monthlyExpenses = state.expenses.filter(exp => exp.date.startsWith(currentMonth));
+        const monthlySalesProfit = monthlySales.reduce((acc, sale) => acc + (sale.profit || 0), 0);
+        const monthlyExpensesSum = monthlyExpenses.reduce((acc, exp) => acc + exp.amount, 0);
+        const monthlyProfitSum = monthlySalesProfit - monthlyExpensesSum;
+
         // Populate Stats DOM
         this.dom.statSales.textContent = `Rs. ${totalSalesSum.toLocaleString()}`;
         this.dom.statSalesQty.textContent = `${totalSalesQty} Invoice${totalSalesQty !== 1 ? 's' : ''} generated`;
@@ -492,6 +557,18 @@ const app = {
         } else {
             this.dom.statProfit.className = "stat-val font-digit text-green";
         }
+
+        if(this.dom.statMonthlyProfit) {
+            this.dom.statMonthlyProfit.textContent = `Rs. ${monthlyProfitSum.toLocaleString()}`;
+            if (monthlyProfitSum < 0) {
+                this.dom.statMonthlyProfit.className = "stat-val font-digit text-red";
+            } else {
+                this.dom.statMonthlyProfit.className = "stat-val font-digit text-green";
+            }
+        }
+
+        // Render Investments
+        this.renderInvestments();
 
         // Render Dashboard Low Stock Alerts
         const lowStockItems = state.inventory.filter(item => item.stock <= item.minStock);
@@ -747,6 +824,73 @@ const app = {
         }
         this.dom.dashboardSearchTbody.innerHTML = html;
         this.dom.dashboardSearchResultsContainer.style.display = "block";
+    },
+
+    // ----------------------------------------------------
+    // INVESTMENTS MANAGEMENT
+    // ----------------------------------------------------
+    renderInvestments: function() {
+        if(!this.dom.investmentsTbody) return;
+        
+        let html = "";
+        if (state.investments.length === 0) {
+            html = `<tr><td colspan="3" class="text-center">No investments recorded yet.</td></tr>`;
+        } else {
+            state.investments.forEach(inv => {
+                html += `
+                    <tr>
+                        <td><strong>${inv.name}</strong></td>
+                        <td class="text-right font-bold text-green font-digit">Rs. ${inv.amount.toLocaleString()}</td>
+                        <td class="text-center">
+                            <button class="btn btn-sm btn-danger" onclick="app.deleteInvestment('${inv.id}')">Remove</button>
+                        </td>
+                    </tr>`;
+            });
+        }
+        this.dom.investmentsTbody.innerHTML = html;
+    },
+
+    openInvestmentModal: function() {
+        this.dom.investmentForm.reset();
+        document.getElementById("investment-id").value = "";
+        this.dom.investmentModal.classList.add("active");
+    },
+
+    handleInvestmentSubmit: function() {
+        const id = document.getElementById("investment-id").value;
+        const name = document.getElementById("investment-name").value.trim();
+        const amount = parseFloat(document.getElementById("investment-amount").value) || 0;
+
+        if (!name || amount <= 0) {
+            alert("Please enter valid name and amount!");
+            return;
+        }
+
+        const invObj = {
+            id: id || "inv-" + Date.now(),
+            name: name,
+            amount: amount,
+            date: new Date().toISOString()
+        };
+
+        if (id) {
+            const index = state.investments.findIndex(i => i.id === id);
+            if (index > -1) state.investments[index] = invObj;
+        } else {
+            state.investments.push(invObj);
+        }
+
+        this.saveData();
+        this.renderInvestments();
+        this.dom.investmentModal.classList.remove("active");
+    },
+
+    deleteInvestment: function(id) {
+        if(confirm("Are you sure you want to remove this investment record?")) {
+            state.investments = state.investments.filter(i => i.id !== id);
+            this.saveData();
+            this.renderInvestments();
+        }
     },
 
     // ----------------------------------------------------
@@ -1462,31 +1606,27 @@ Thank you for visiting!`;
         const date = document.getElementById("expense-date").value;
 
         if (!desc || amount <= 0 || !date) {
-            alert("Please fill all required inputs.");
+            alert("Please enter a valid description, amount, and date.");
             return;
         }
 
-        const newExpense = {
-            id: Date.now().toString(),
-            desc,
-            amount,
-            category,
-            date
+        const expObj = {
+            id: "exp-" + Date.now(),
+            desc: desc,
+            amount: amount,
+            category: category,
+            date: date
         };
 
-        state.expenses.push(newExpense);
+        state.expenses.push(expObj);
         this.saveData();
+        this.dom.expenseForm.reset();
+        this.dom.expenseDateInput.value = new Date().toLocaleDateString('en-CA'); // Reset date to today
         this.renderExpenses();
-        
-        // Reset form keeping date
-        document.getElementById("expense-desc").value = "";
-        document.getElementById("expense-amount").value = "";
-        
-        alert("Expense record saved successfully!");
     },
 
     deleteExpense: function(id) {
-        if (confirm("Are you sure you want to delete this expense entry?")) {
+        if (confirm("Are you sure you want to delete this expense record?")) {
             state.expenses = state.expenses.filter(e => e.id !== id);
             this.saveData();
             this.renderExpenses();
@@ -1494,7 +1634,77 @@ Thank you for visiting!`;
     },
 
     // ----------------------------------------------------
-    // CUSTOMERS & VISITS HISTORY LOG
+    // QARZA (CREDIT) MANAGEMENT
+    // ----------------------------------------------------
+    renderCredits: function() {
+        if(!this.dom.creditsTbody) return;
+        
+        let html = "";
+        const sorted = [...state.credits].reverse();
+        const totalCredit = state.credits.reduce((sum, c) => sum + c.amount, 0);
+
+        this.dom.creditLogTotal.textContent = `Rs. ${totalCredit.toLocaleString()}`;
+
+        if (sorted.length === 0) {
+            html = `<tr><td colspan="5" class="text-center">No pending qarza (credit) logs found.</td></tr>`;
+        } else {
+            sorted.forEach(cr => {
+                html += `
+                    <tr>
+                        <td data-label="Date"><span class="font-digit">${cr.date}</span></td>
+                        <td data-label="Client Info">
+                            <div class="font-bold">${cr.name}</div>
+                            <div class="description-text">${cr.phone || 'N/A'}</div>
+                        </td>
+                        <td data-label="Description">${cr.desc || '-'}</td>
+                        <td data-label="Amount" class="text-right font-bold text-red font-digit">Rs. ${cr.amount.toLocaleString()}</td>
+                        <td data-label="Action" class="text-center">
+                            <button class="btn btn-sm btn-success" onclick="app.markCreditPaid('${cr.id}')">Mark Paid</button>
+                        </td>
+                    </tr>`;
+            });
+        }
+        this.dom.creditsTbody.innerHTML = html;
+    },
+
+    handleCreditSubmit: function() {
+        const name = document.getElementById("credit-name").value.trim();
+        const phone = document.getElementById("credit-phone").value.trim();
+        const amount = parseFloat(document.getElementById("credit-amount").value) || 0;
+        const desc = document.getElementById("credit-desc").value.trim();
+        const date = document.getElementById("credit-date").value;
+
+        if (!name || amount <= 0 || !date) {
+            alert("Please enter valid name, amount, and date.");
+            return;
+        }
+
+        const crObj = {
+            id: "cr-" + Date.now(),
+            name: name,
+            phone: phone,
+            amount: amount,
+            desc: desc,
+            date: date
+        };
+
+        state.credits.push(crObj);
+        this.saveData();
+        this.dom.creditForm.reset();
+        this.dom.creditDateInput.value = new Date().toLocaleDateString('en-CA');
+        this.renderCredits();
+    },
+
+    markCreditPaid: function(id) {
+        if (confirm("Are you sure you want to mark this Qarza as PAID? It will be removed from this list.")) {
+            state.credits = state.credits.filter(c => c.id !== id);
+            this.saveData();
+            this.renderCredits();
+        }
+    },
+
+    // ----------------------------------------------------
+    // CUSTOMERS DIRECTORY& VISITS HISTORY LOG
     // ----------------------------------------------------
     getCustomersSummary: function() {
         const customersMap = {};
